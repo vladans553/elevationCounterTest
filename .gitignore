@@ -1,0 +1,15 @@
+# Izveštaji i privremeni fajlovi
+test-output/
+target/
+*.log
+
+# Driveri (svako treba da ima svoje na lokalu)
+*.exe
+geckodriver*
+msedgedriver*
+
+# Eclipse/IDE specifični fajlovi
+.settings/
+.project
+.classpath
+bin/test-output/  target/  .settings/  .project  .classpath  bin/ 
