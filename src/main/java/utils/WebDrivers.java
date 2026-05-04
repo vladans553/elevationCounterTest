@@ -14,25 +14,31 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebDrivers {
     
-    // Umesto hardkodovanja, čitamo iz Environment varijabli (bitno za GitHub Actions)
+    // Čitamo iz Environment varijabli (podesićemo ih na GitHubu)
     static String userName = System.getenv("BROWSERSTACK_USERNAME");
     static String accessKey = System.getenv("BROWSERSTACK_ACCESS_KEY");
     static String cloudUrl = "https://" + userName + ":" + accessKey + "@hub.browserstack.com/wd/hub";
 
-    public static WebDriver createDriver(BrowserType browserType) {
+    public static WebDriver createDriver(BrowserType browserType, boolean headless) {
         WebDriver driver = null;
 
         switch (browserType) {
         case EDGE:
-            // Selenium Manager (verzija 4.6.0+) automatski nalazi drajver, 
-            // pa ti System.setProperty više i ne treba ako imaš noviji Selenium.
             EdgeOptions edgeOptions = new EdgeOptions();
+            if (headless) {
+                edgeOptions.addArguments("--headless=new");
+                edgeOptions.addArguments("--window-size=1920,1080");
+            }
             edgeOptions.addArguments("--start-maximized");
             driver = new EdgeDriver(edgeOptions);
             break;
 
         case FIREFOX:
             FirefoxOptions firefoxOptions = new FirefoxOptions();
+            if (headless) {
+                firefoxOptions.addArguments("-headless");
+                firefoxOptions.addArguments("--window-size=1920,1080");
+            }
             firefoxOptions.addArguments("--start-maximized");
             driver = new FirefoxDriver(firefoxOptions);
             break;
@@ -49,12 +55,17 @@ public class WebDrivers {
         switch (browserType) {
             case EDGE:
                 EdgeOptions edgeOptions = new EdgeOptions();
+                // HEADLESS ZA EDGE
+                edgeOptions.addArguments("--headless=new");
+                edgeOptions.addArguments("--window-size=1920,1080");
                 edgeOptions.addArguments("--start-maximized");
                 capabilities = edgeOptions;
                 break;
             case FIREFOX:
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
-                firefoxOptions.addArguments("--start-maximized");
+                // HEADLESS ZA FIREFOX
+                firefoxOptions.addArguments("-headless");
+                firefoxOptions.addArguments("--window-size=1920,1080");
                 capabilities = firefoxOptions;
                 break;
             default:

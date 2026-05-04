@@ -3,8 +3,9 @@
 <suite name="Cloud Remote Fast Suite" parallel="none">
 
     <!-- Globalni parametri za ceo Suite -->
-    <parameter name="executionType" value="remote" />
+    <parameter name="executionType" value="local" />
     <parameter name="sessionType" value="class" />
+     <parameter name="headless" value="true" />
 
     <test name="Remote Edge Fast Execution">
         <!-- Specifičan browser za ovaj test blok -->

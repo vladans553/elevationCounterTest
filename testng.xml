@@ -4,6 +4,7 @@
     <test name="Elevation Test - FIREFOX">
         <parameter name="browser" value="firefox" />
         <parameter name="executionType" value="local" />
+        <parameter name="headless" value="false" />
         
         <classes>
             <class name="tests.TestClass" />

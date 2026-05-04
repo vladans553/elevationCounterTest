@@ -4,6 +4,7 @@
 
 	<parameter name="executionType" value="local" />
     <parameter name="sessionType" value="class" />
+     <parameter name="headless" value="false" />
 
     <test name="Firefox - Fast Session">
         <parameter name="browser" value="firefox" />
