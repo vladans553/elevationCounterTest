@@ -3,6 +3,8 @@
     <!-- Test grupa za Firefox -->
     <test name="Elevation Test - FIREFOX">
         <parameter name="browser" value="firefox" />
+        <parameter name="executionType" value="local" />
+        
         <classes>
             <class name="tests.TestClass" />
         </classes>

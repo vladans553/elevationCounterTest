@@ -14,40 +14,48 @@ public class BaseTest {
     protected static ThreadLocal<ExtentTest> extentTest = new ThreadLocal<>();
     protected static ExtentReports extent = ExtentManager.getInstance();
 
-    // 1. Pomoćna metoda koja samo otvara browser (bez pravljenja testa u reportu)
-    private void openBrowser(String browser) {
-        WebDriver driver = WebDrivers.createDriver(browser.equalsIgnoreCase("firefox") ? 
-                          WebDrivers.BrowserType.FIREFOX : WebDrivers.BrowserType.EDGE);
+    // 1. Modifikovana pomoćna metoda koja podržava i Remote i Local
+    private void openBrowser(String browser, String executionType) {
+        WebDriver driver;
+        WebDrivers.BrowserType type = browser.equalsIgnoreCase("firefox") ? 
+                                      WebDrivers.BrowserType.FIREFOX : WebDrivers.BrowserType.EDGE;
+
+        // Provera gde se test izvršava
+        if ("remote".equalsIgnoreCase(executionType)) {
+            driver = WebDrivers.createRemoteDriver(type);
+        } else {
+            driver = WebDrivers.createDriver(type);
+        }
+
         threadDriver.set(driver);
         getDriver().manage().window().maximize();
     }
 
-    // 2. Pokretanje browsera JEDNOM za celu klasu (Fast verzija)
+    // 2. Setup za celu klasu (Fast verzija)
     @BeforeClass
-    @Parameters({"browser", "sessionType"})
-    public void setupClass(String browser, @Optional("method") String sessionType) {
+    @Parameters({"browser", "sessionType", "executionType"})
+    public void setupClass(String browser, @Optional("method") String sessionType, @Optional("local") String executionType) {
         if (sessionType.equalsIgnoreCase("class")) {
-            openBrowser(browser);
+            openBrowser(browser, executionType);
         }
     }
 
-    // 3. OVO JE KLJUČ: Pravljenje zapisa u reportu za SVAKU metodu, u oba scenarija
+    // 3. Setup za svaku metodu (Pravljenje reporta i opciono otvaranje browsera)
     @BeforeMethod
-    @Parameters({"browser", "sessionType"})
-    public void setupMethod(String browser, @Optional("method") String sessionType, Method method) {
-        // Izvlačimo opis
+    @Parameters({"browser", "sessionType", "executionType"})
+    public void setupMethod(String browser, @Optional("method") String sessionType, @Optional("local") String executionType, Method method) {
         Test testAnnotation = method.getAnnotation(Test.class);
         String description = (testAnnotation != null) ? testAnnotation.description() : "Nema opisa";
-        String testDisplayName = method.getName() + " [" + browser.toUpperCase() + "] - " + description;
+        
+        // Dodajemo informaciju o tipu izvršavanja u ime testa u reportu
+        String testDisplayName = method.getName() + " [" + browser.toUpperCase() + " - " + executionType.toUpperCase() + "] - " + description;
 
-        // Pravimo novi test u Extent Reportu
         ExtentTest test = extent.createTest(testDisplayName);
         extentTest.set(test);
 
-        // Ako je sesija podešena na "method", ovde otvaramo browser (Isolated verzija)
         if (sessionType.equalsIgnoreCase("method")) {
-            openBrowser(browser);
-            extentTest.get().info("Browser pokrenut (Nova sesija)");
+            openBrowser(browser, executionType);
+            extentTest.get().info("Browser pokrenut (" + executionType + " sesija)");
         } else {
             extentTest.get().info("Nastavak u postojećoj sesiji (Fast mode)");
         }
@@ -58,7 +66,6 @@ public class BaseTest {
     @AfterMethod
     @Parameters("sessionType")
     public void tearDownMethod(@Optional("method") String sessionType) {
-        // Zatvaramo drajver posle svake metode SAMO ako je Isolated mod
         if (sessionType.equalsIgnoreCase("method") && getDriver() != null) {
             closeDriver();
         }
@@ -67,14 +74,15 @@ public class BaseTest {
     @AfterClass
     @Parameters("sessionType")
     public void tearDownClass(@Optional("method") String sessionType) {
-        // Zatvaramo drajver na kraju klase SAMO ako je Fast mod
         if (sessionType.equalsIgnoreCase("class") && getDriver() != null) {
             closeDriver();
         }
     }
 
     private void closeDriver() {
-        getDriver().quit();
+        if (getDriver() != null) {
+            getDriver().quit();
+        }
         threadDriver.remove();
         extentTest.remove();
     }

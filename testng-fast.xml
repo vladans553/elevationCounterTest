@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="Fast Suite" parallel="tests" thread-count="2">
+
+	<parameter name="executionType" value="local" />
     <parameter name="sessionType" value="class" />
 
     <test name="Firefox - Fast Session">
