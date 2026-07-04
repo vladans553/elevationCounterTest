@@ -32,5 +32,11 @@ public class BasePage {
 		driver.findElement(by).click();
 	}
 	
+	public void sendKeys(String text, By by) {
+		waiting(by);
+		driver.findElement(by).clear();
+		driver.findElement(by).sendKeys(text);
+	}
+	
 
 }
