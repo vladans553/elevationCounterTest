@@ -16,16 +16,32 @@ public class LoginPage extends BasePage{
 	String passwordInput = "password";
 	String loginBtn = "login-button";
 	String errorMsgClass = "//h3[@data-test='error']";
+	public String errorMsg = "Epic sadface: Username and password do not match any user in this service";
+    
 	
 	public void openLoginPage() {
 		driver.get(url);
 	}
 	
 	
-	public void login(String uName, String password) {
-		sendKeys(uName, By.id(userNameInput));
-		sendKeys(password, By.id(passwordInput));
-		clickOn(By.id(loginBtn));
+	public boolean loginPagePresenceVerification() {
+		waiting(By.id("password"));
+		return driver.findElement(By.id("password")).isDisplayed();
+	}
+	
+	
+	public HomePage loginExpectSuccess(String uName, String password) {
+	    sendKeys(uName, By.id(userNameInput));
+	    sendKeys(password, By.id(passwordInput));
+	    clickOn(By.id(loginBtn));
+	    return new HomePage(driver);
+	}
+
+	public LoginPage loginExpectFailure(String uName, String password) {
+	    sendKeys(uName, By.id(userNameInput));
+	    sendKeys(password, By.id(passwordInput));
+	    clickOn(By.id(loginBtn));
+	    return this; 
 	}
 	
 	public String getErrorMsgText() {

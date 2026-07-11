@@ -15,7 +15,7 @@ public class BaseTest {
     
     @BeforeMethod
     public void createSession(Method method) {
-        WebDriver d = WebDrivers.createDriver(true);
+        WebDriver d = WebDrivers.createDriver(false);
         threadDriver.set(d);
         
     }
@@ -32,6 +32,7 @@ public class BaseTest {
 
     public WebDriver getDriver() {
         return threadDriver.get();
+        
     }
 
     
