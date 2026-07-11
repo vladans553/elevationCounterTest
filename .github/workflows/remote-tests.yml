@@ -26,6 +26,12 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
+    # Dodat korak koji instalira i osvežava Firefox na GitHub virtuelnoj mašini
+    - name: Setup Firefox
+      uses: browser-actions/setup-firefox@v1
+      with:
+        firefox-version: 'latest'
+
     - name: Run TestNG Tests
       env:
         VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
