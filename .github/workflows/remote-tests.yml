@@ -7,6 +7,10 @@ on:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
+# Dajemo dozvolu GitHub Actions-u da napravi i zapiše report sajt
+permissions:
+  contents: write
+
 jobs:
   run-selenium-tests:
     runs-on: ubuntu-latest
@@ -23,9 +27,35 @@ jobs:
         cache: 'maven'
 
     - name: Run TestNG Tests
-      # OVDE DODAJEMO SAKRIVENU LOZINKU KROZ ENV
       env:
-		VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
-		VALID_USERNAME: ${{ secrets.VALID_USERNAME }}
-
+        VALID_PASSWORD: ${{ secrets.VALID_PASSWORD }}
+        VALID_USERNAME: ${{ secrets.VALID_USERNAME }}
       run: mvn clean test -DsuiteXmlFile=parallel-run.xml
+      continue-on-error: true # Ako neki test pukne, želimo da se izveštaj ipak napravi!
+
+    # 1. Korak za preuzimanje istorije prethodnih testova
+    - name: Get Allure history
+      uses: actions/checkout@v4
+      if: always()
+      with:
+        ref: gh-pages
+        path: allure-history
+      continue-on-error: true # Sprečava pad ako grana gh-pages još ne postoji
+
+    # 2. Korak koji generiše sam Allure Report iz "target/allure-results" foldera
+    - name: Generate Allure Report
+      uses: simple-elf/allure-report-action@master
+      if: always()
+      with:
+        allure_results: target/allure-results
+        allure_history: allure-history
+        keep_reports: 20
+
+    # 3. Korak koji objavljuje taj izveštaj na GitHub Pages grani
+    - name: Deploy Report to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: always()
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: allure-history
