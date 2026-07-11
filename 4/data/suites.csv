@@ -1,0 +1,5 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","0","validLoginTest","Surefire suite","2026-07-11","skipped","2026-07-11","tests.TestClass","Surefire test","tests.TestClass","validLoginTest"
+"","1","createSession","Surefire suite","2026-07-11","broken","2026-07-11","tests.TestClass","Surefire test","tests.TestClass","createSession"
+"","2","invalidLoginTest","Surefire suite","2026-07-11","skipped","2026-07-11","tests.TestClass","Surefire test","tests.TestClass","invalidLoginTest"
+"","0","logoutTest","Surefire suite","2026-07-11","skipped","2026-07-11","tests.TestClass","Surefire test","tests.TestClass","logoutTest"
