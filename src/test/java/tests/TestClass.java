@@ -2,6 +2,8 @@ package tests;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import io.qameta.allure.Allure;
 import pages.HomePage; 
 import pages.LoginPage;
 import utils.TestDataManager;
@@ -10,16 +12,23 @@ import utils.TestDataManager.MyVariable;
 public class TestClass extends BaseTest {
     
     
-    @Test
+	@Test
     public void invalidLoginTest() {
-    	
         LoginPage lp = new LoginPage(getDriver());
         lp.openLoginPage();
         lp.loginExpectFailure(TestDataManager.getGitHubVariable(MyVariable.VALID_USERNAME), "bogusPassword");
-        String errorMSGactual = lp.getErrorMsgText();
         
+        String errorMSGactual = lp.getErrorMsgText();
         System.out.println("MESSAGE " + errorMSGactual);
-        Assert.assertTrue(errorMSGactual.contains(lp.errorMsg));
+        
+        if (errorMSGactual == null || errorMSGactual.trim().isEmpty()) {
+            Allure.addAttachment("Greška pri dohvatanju", "Poruka o grešci NIJE pronađena na stranici (tekst je null ili prazan)!");
+        } else {
+            Allure.addAttachment("Dohvaćena poruka o grešci", "Stvarni tekst sa stranice: " + errorMSGactual);
+        }
+        
+        Assert.assertNotNull(errorMSGactual, "Greška: Tekst poruke je null!");
+        Assert.assertTrue(errorMSGactual.contains(lp.errorMsg), "Poruka ne sadrži očekivani tekst!");
     }
     
     @Test
